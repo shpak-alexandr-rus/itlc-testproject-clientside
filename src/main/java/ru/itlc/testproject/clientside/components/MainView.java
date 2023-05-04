@@ -7,6 +7,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import ru.itlc.testproject.clientside.responses.Book;
+import ru.itlc.testproject.clientside.responses.BooleanResponse;
 import ru.itlc.testproject.clientside.utils.HttpWorkUtils;
 
 import java.util.Arrays;
@@ -37,7 +38,14 @@ public class MainView {
 
 		deleteBtn.disableProperty().bind(Bindings.isEmpty(table.getTableView().getSelectionModel().getSelectedItems()));
 		deleteBtn.setOnAction(e -> {
-			System.out.println("Removing");
+			BooleanResponse response = HttpWorkUtils.deleteBookById(table.getTableView().getSelectionModel().getSelectedItems().get(0).getBookId());
+			if (response != null && response.isStatus()) {
+				table.clear();
+				Book[] book = HttpWorkUtils.getAllBooks();
+				if (book != null) {
+					Arrays.stream(book).forEach(b -> table.add(b));
+				}
+			}
 		});
 		editBtn.disableProperty().bind(Bindings.isEmpty(table.getTableView().getSelectionModel().getSelectedItems()));
 		editBtn.setOnAction(e -> {

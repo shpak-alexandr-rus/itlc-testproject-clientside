@@ -60,7 +60,7 @@ public class BookTableView extends VBox {
 
 		
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
+		table.getItems().clear();
 		getChildren().add(table);
 	}
 	
@@ -70,5 +70,9 @@ public class BookTableView extends VBox {
 
 	public TableView<Book> getTableView() {
 		return table;
+	}
+
+	public void clear() {
+		table.getItems().clear();
 	}
 }

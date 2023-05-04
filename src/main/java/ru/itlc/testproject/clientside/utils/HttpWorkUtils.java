@@ -4,17 +4,20 @@ import com.google.gson.Gson;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import ru.itlc.testproject.clientside.responses.Book;
+import ru.itlc.testproject.clientside.responses.BooleanResponse;
 import ru.itlc.testproject.clientside.responses.HealthCheckResponse;
 
 public class HttpWorkUtils {
     private static final String baseApiUrl = "http://localhost:8080";
     private static final String healthCheckPath = "api/health-check";
     private static final String getAllBooks = "api/books";
+    private static final String accessByIdFormat = "api/books/%d";
     private static final HttpClient client = HttpClients.createDefault();
     public static boolean getServerCheckHealth() {
         try {
@@ -55,4 +58,22 @@ public class HttpWorkUtils {
             return null;
         }
     }
+    public static BooleanResponse deleteBookById(long id) {
+        try {
+            URIBuilder uriBuilder = new URIBuilder(baseApiUrl);
+            uriBuilder.setPath(String.format(accessByIdFormat, id));
+
+            String healthCheckUri = uriBuilder.build().toString();
+            HttpDelete getHealthCheckMethod = new HttpDelete(healthCheckUri);
+            HttpResponse getHealthCheckResponse = client.execute(getHealthCheckMethod);
+
+            String responseBody = EntityUtils.toString(getHealthCheckResponse.getEntity());
+            Gson gsonEntity = new Gson();
+            return gsonEntity.fromJson(responseBody, BooleanResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }
