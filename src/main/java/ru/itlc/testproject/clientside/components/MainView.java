@@ -1,5 +1,6 @@
 package ru.itlc.testproject.clientside.components;
 
+import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
@@ -25,6 +26,7 @@ public class MainView {
 		AnchorPane root = new AnchorPane();
 
 		Button deleteBtn = new Button("Удалить");
+
 		deleteBtn.setPrefWidth(125.0);
 		Button editBtn = new Button("Редактировать");
 		editBtn.setPrefWidth(125.0);
@@ -32,6 +34,15 @@ public class MainView {
 		addBtn.setPrefWidth(125.0);
 
 		table = new BookTableView();
+
+		deleteBtn.disableProperty().bind(Bindings.isEmpty(table.getTableView().getSelectionModel().getSelectedItems()));
+		deleteBtn.setOnAction(e -> {
+			System.out.println("Removing");
+		});
+		editBtn.disableProperty().bind(Bindings.isEmpty(table.getTableView().getSelectionModel().getSelectedItems()));
+		editBtn.setOnAction(e -> {
+			System.out.println("Editing");
+		});
 
 		AnchorPane.setTopAnchor(table, 10.0);
 		AnchorPane.setLeftAnchor(table, 10.0);

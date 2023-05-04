@@ -67,4 +67,8 @@ public class BookTableView extends VBox {
 	public void add(Book book) {
 		table.getItems().add(book);
 	}
+
+	public TableView<Book> getTableView() {
+		return table;
+	}
 }
