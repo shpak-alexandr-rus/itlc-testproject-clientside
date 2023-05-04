@@ -1,7 +1,8 @@
 package ru.itlc.testproject.clientside.components;
 
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.Button;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import ru.itlc.testproject.clientside.responses.Book;
@@ -21,16 +22,42 @@ public class MainView {
 	private void buildUI() {
 		stage = new Stage(StageStyle.DECORATED);
 
-		BorderPane root = new BorderPane();
+		AnchorPane root = new AnchorPane();
+
+		Button deleteBtn = new Button("Удалить");
+		deleteBtn.setPrefWidth(125.0);
+		Button editBtn = new Button("Редактировать");
+		editBtn.setPrefWidth(125.0);
+		Button addBtn = new Button("Добавить");
+		addBtn.setPrefWidth(125.0);
 
 		table = new BookTableView();
+
+		AnchorPane.setTopAnchor(table, 10.0);
+		AnchorPane.setLeftAnchor(table, 10.0);
+		AnchorPane.setRightAnchor(table, 145.0);
+		AnchorPane.setBottomAnchor(table, 10.0);
+
+		AnchorPane.setTopAnchor(deleteBtn, 10.0);
+		AnchorPane.setRightAnchor(deleteBtn, 10.0);
+
+		AnchorPane.setTopAnchor(editBtn, 110.0);
+		AnchorPane.setRightAnchor(editBtn, 10.0);
+
+		AnchorPane.setTopAnchor(addBtn, 210.0);
+		AnchorPane.setRightAnchor(addBtn, 10.0);
+
 
 		Book[] book = HttpWorkUtils.getAllBooks();
 		if (book != null) {
 			Arrays.stream(book).forEach(b -> table.add(b));
 		}
 
-		root.setCenter(table);
+		root.getChildren().add(table);
+		root.getChildren().add(deleteBtn);
+		root.getChildren().add(editBtn);
+		root.getChildren().add(addBtn);
+//		root.setCenter(table);
 
 		Scene scene = new Scene(root, 1200, 400);
 		scene.getStylesheets().add("ru/itlc/testproject/clientside/stylesheet.css");
