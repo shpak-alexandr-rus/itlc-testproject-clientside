@@ -22,85 +22,137 @@ public class MainView {
 	}
 
 	private void buildUI() {
+		// Создание окна в стиле UTILITY без возможности изменять размер
 		stage = new Stage(StageStyle.UTILITY);
 		stage.setResizable(false);
 
+		// Создание панели
 		AnchorPane root = new AnchorPane();
+
+		// Создание таблицы для отображения записей из базы данных
 		table = new BookTableView();
 
+
+		// !!! (НАЧАЛО) СОЗДАНИЕ КНОПОК ГЛАВНОЙ ФОРМЫ !!!
+		// Создание кнопки "Удалить"
 		Button deleteBtn = new Button("Удалить");
 		deleteBtn.setPrefWidth(125.0);
+
+		// Делается кнопка "Удалить" неактивной, если ни одна строка в таблице не выбрана
 		deleteBtn.disableProperty().bind(Bindings.isEmpty(table.getTableView().getSelectionModel().getSelectedItems()));
+
+		// Создается обработчик нажатия на кнопку "Удалить"
 		deleteBtn.setOnAction(e -> {
+			// Выполнение HTTP запроса для удаления записи из базу данных
 			BooleanResponse response = HttpWorkUtils.deleteBookById(table.getTableView().getSelectionModel().getSelectedItems().get(0).getBookId());
+
+			// Обновление содержимого таблицы
 			if (response != null && response.isStatus()) {
-				table.clear();
-				Book[] book = HttpWorkUtils.getAllBooks();
-				if (book != null) {
-					Arrays.stream(book).forEach(b -> table.add(b));
-				}
+				refreshBookTable(table);
 			}
 		});
 
+		// Создание кнопки "Редактировать"
 		Button editBtn = new Button("Редактировать");
 		editBtn.setPrefWidth(125.0);
+
+		// Делается кнопка "Редактировать" неактивной, если ни одна строка в таблице не выбрана
 		editBtn.disableProperty().bind(Bindings.isEmpty(table.getTableView().getSelectionModel().getSelectedItems()));
+
+		// Создаем обработчик нажатия на кнопку "Редактировать"
 		editBtn.setOnAction(e -> {
+			// Создание формы редактирования информации
 			new BookFormView(table.getTableView().getSelectionModel().getSelectedItems().get(0));
-			table.clear();
-			Book[] book = HttpWorkUtils.getAllBooks();
-			if (book != null) {
-				Arrays.stream(book).forEach(b -> table.add(b));
-			}
+
+			// Обновление содержимого таблицы
+			refreshBookTable(table);
 		});
 
+		// Создание кнопки "Добавить"
 		Button addBtn = new Button("Добавить");
 		addBtn.setPrefWidth(125.0);
+
+		// Создаем обработчик нажатия на кнопку "Добавить"
 		addBtn.setOnAction(e -> {
+			// Создание формы редактирования информации
 			new BookFormView();
-			table.clear();
-			Book[] book = HttpWorkUtils.getAllBooks();
-			if (book != null) {
-				Arrays.stream(book).forEach(b -> table.add(b));
-			}
+			// Обновление содержимого таблицы
+			refreshBookTable(table);
 		});
 
+		// Создание кнопки "Закрыть"
 		Button closeBtn = new Button("Закрыть");
 		closeBtn.setPrefWidth(125.0);
-		closeBtn.setOnAction(event -> stage.close());
 
+		// Создаем обработчик нажатия на кнопку "Закрыть"
+		closeBtn.setOnAction(event -> stage.close());
+		// !!! (КОНЕЦ) СОЗДАНИЕ КНОПОК ГЛАВНОЙ ФОРМЫ !!!
+
+
+		// !!! (НАЧАЛО) НАСТРОЙКА РАСПОЛЬЖЕНИЯ ЭЛЕМЕНТОВ НА ПАНЕЛЬ !!!
+		// Настройка расположения таблицы на панели
 		AnchorPane.setTopAnchor(table, 10.0);
 		AnchorPane.setLeftAnchor(table, 10.0);
 		AnchorPane.setRightAnchor(table, 145.0);
 		AnchorPane.setBottomAnchor(table, 10.0);
 
+		// Настройка расположения кнопки "Удалить" на панели
 		AnchorPane.setTopAnchor(deleteBtn, 10.0);
 		AnchorPane.setRightAnchor(deleteBtn, 10.0);
 
+		// Настройка расположения кнопки "Редактировать" на панели
 		AnchorPane.setTopAnchor(editBtn, 110.0);
 		AnchorPane.setRightAnchor(editBtn, 10.0);
 
+		// Настройка расположения кнопки "Добавить" на панели
 		AnchorPane.setTopAnchor(addBtn, 210.0);
 		AnchorPane.setRightAnchor(addBtn, 10.0);
 
+		// Настройка расположения кнопки "Закрыть" на панели
 		AnchorPane.setTopAnchor(closeBtn, 310.0);
 		AnchorPane.setRightAnchor(closeBtn, 10.0);
+		// !!! (КОНЕЦ) НАСТРОЙКА РАСПОЛЬЖЕНИЯ ЭЛЕМЕНТОВ НА ПАНЕЛЬ !!!
 
-		Book[] book = HttpWorkUtils.getAllBooks();
-		if (book != null) {
-			Arrays.stream(book).forEach(b -> table.add(b));
-		}
+		// Обновления содержимого таблицы
+		refreshBookTable(table);
 
+		// !!! (НАЧАЛО) ДОБАВЛЕНИЕ ЭЛЕМЕНТОВ НА ПАНЕЛЬ !!!
+		// Добавление таблицу на панель
 		root.getChildren().add(table);
-		root.getChildren().add(deleteBtn);
-		root.getChildren().add(editBtn);
-		root.getChildren().add(addBtn);
-		root.getChildren().add(closeBtn);
 
+		// Добавление кнопки "Удалить" на панель
+		root.getChildren().add(deleteBtn);
+
+		// Добавление кнопки "Редактировать" на панель
+		root.getChildren().add(editBtn);
+
+		// Добавление кнопки "Добавить" на панель
+		root.getChildren().add(addBtn);
+
+		// Добавление кнопки "Закрыть" на панель
+		root.getChildren().add(closeBtn);
+		// !!! (КОНЕЦ) ДОБАВЛЕНИЕ ЭЛЕМЕНТОВ НА ПАНЕЛЬ !!!
+
+		// Конфигурирование и запуск главного окна
 		Scene scene = new Scene(root, 1200, 400);
 		scene.getStylesheets().add("ru/itlc/testproject/clientside/stylesheet.css");
 		stage.setTitle("Картотека книг");
 		stage.setScene(scene);
 		stage.show();
+	}
+
+	// Метод для обновления содержимого таблицы
+	private void refreshBookTable(BookTableView table) {
+		// Очистка содержимого таблицы
+		table.clear();
+
+		// Получение данных от сервера
+		Book[] book = HttpWorkUtils.getAllBooks();
+
+		// Если данные получены
+		if (book != null) {
+			// Данные помещаются в таблицу
+			Arrays.stream(book).forEach(b -> table.add(b));
+		}
 	}
 }
