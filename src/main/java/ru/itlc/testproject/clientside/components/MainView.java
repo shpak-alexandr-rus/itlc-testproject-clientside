@@ -3,6 +3,7 @@ package ru.itlc.testproject.clientside.components;
 import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableRow;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -32,6 +33,19 @@ public class MainView {
 		// Создание таблицы для отображения записей из базы данных
 		table = new BookTableView();
 
+		// Создание обработчика двойного щелчка на элементе таблицы
+		table.getTableView().setRowFactory( tv -> {
+			TableRow<Book> row = new TableRow<>();
+			row.setOnMouseClicked(event -> {
+				if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+					Book book = row.getItem();
+					new BookFormView(book);
+					refreshBookTable(table);
+				}
+			});
+			return row ;
+		});
+
 
 		// !!! (НАЧАЛО) СОЗДАНИЕ КНОПОК ГЛАВНОЙ ФОРМЫ !!!
 		// Создание кнопки "Удалить"
@@ -41,7 +55,7 @@ public class MainView {
 		// Делается кнопка "Удалить" неактивной, если ни одна строка в таблице не выбрана
 		deleteBtn.disableProperty().bind(Bindings.isEmpty(table.getTableView().getSelectionModel().getSelectedItems()));
 
-		// Создается обработчик нажатия на кнопку "Удалить"
+		// Создание обработчик нажатия на кнопку "Удалить"
 		deleteBtn.setOnAction(e -> {
 			// Выполнение HTTP запроса для удаления записи из базу данных
 			BooleanResponse response = HttpWorkUtils.deleteBookById(table.getTableView().getSelectionModel().getSelectedItems().get(0).getBookId());
@@ -59,7 +73,7 @@ public class MainView {
 		// Делается кнопка "Редактировать" неактивной, если ни одна строка в таблице не выбрана
 		editBtn.disableProperty().bind(Bindings.isEmpty(table.getTableView().getSelectionModel().getSelectedItems()));
 
-		// Создаем обработчик нажатия на кнопку "Редактировать"
+		// Создание обработчик нажатия на кнопку "Редактировать"
 		editBtn.setOnAction(e -> {
 			// Создание формы редактирования информации
 			new BookFormView(table.getTableView().getSelectionModel().getSelectedItems().get(0));
@@ -72,7 +86,7 @@ public class MainView {
 		Button addBtn = new Button("Добавить");
 		addBtn.setPrefWidth(125.0);
 
-		// Создаем обработчик нажатия на кнопку "Добавить"
+		// Создание обработчик нажатия на кнопку "Добавить"
 		addBtn.setOnAction(e -> {
 			// Создание формы редактирования информации
 			new BookFormView();
