@@ -25,7 +25,7 @@ public class BookFormView {
     }
 
     private void buildUI () {
-        // ну а тут создаем новое окно
+        // Создаем окна в стиле UTILITY без возможности изменять размер
         Stage stage = new Stage(StageStyle.UTILITY);
         stage.setResizable(false);
 
@@ -37,8 +37,8 @@ public class BookFormView {
         Scene scene = new Scene(root);
         scene.getStylesheets().add("ru/itlc/testproject/clientside/stylesheet.css");
 
-        // Create JavaFX Controls (nodes) to add to the GridPane
         Label lblBookAuthor = new Label("Автор: ");
+        lblBookAuthor.setFocusTraversable(true);
         Label lblBookTitle = new Label("Название: ");
         Label lblBookPublisher = new Label("Издательство: ");
         Label lblBookPublisherAddress = new Label("Адр. издат.: ");
@@ -74,6 +74,7 @@ public class BookFormView {
         txtBookTitle.setPromptText("Введите название книги");
         txtBookPublisher.setPromptText("Введите название издательства");
         txtBookPublisherAddress.setPromptText("Введите адрес издательства");
+        bookPublishingDate.setPromptText("Введите дату публикации");
 
         Button btnSave = new Button("Сохранить");
         btnSave.setOnAction((event -> {
@@ -94,6 +95,7 @@ public class BookFormView {
 
         ButtonBar btnBar = new ButtonBar();
         btnBar.getButtons().addAll(btnSave, btnCancel);
+
 
         grid.add(lblBookAuthor, 0, 0, 1, 1);
         grid.add(txtBookAuthor, 1, 0, 1, 1);
@@ -119,13 +121,11 @@ public class BookFormView {
 
         grid.add(btnBar, 0, 6, 2, 1);
 
-        // Set Column and Row Gap
         grid.setHgap(10);
         grid.setVgap(5);
 
         grid.setPadding(new Insets(10, 10, 20, 10));
 
-        // Column Constraints
         ColumnConstraints column1 = new ColumnConstraints();
         ColumnConstraints column2 = new ColumnConstraints();
         ColumnConstraints column3 = new ColumnConstraints();
@@ -138,7 +138,6 @@ public class BookFormView {
         column2.setPercentWidth(83);
         column3.setPercentWidth(2);
 
-        // Horizontal alignment
         GridPane.setHalignment(lblBookAuthor, HPos.RIGHT);
         GridPane.setHalignment(lblBookTitle, HPos.RIGHT);
         GridPane.setHalignment(lblBookPublisher, HPos.RIGHT);
@@ -146,9 +145,7 @@ public class BookFormView {
         GridPane.setHalignment(lblBookPublishingDate, HPos.RIGHT);
 
         root.setCenter(grid);
-
         stage.setScene(scene);
-
         stage.showAndWait();
     }
 }
