@@ -33,6 +33,14 @@ public class MainView {
 		editBtn.setPrefWidth(125.0);
 		Button addBtn = new Button("Добавить");
 		addBtn.setPrefWidth(125.0);
+		addBtn.setOnAction(e -> {
+			new BookFormView();
+			table.clear();
+			Book[] book = HttpWorkUtils.getAllBooks();
+			if (book != null) {
+				Arrays.stream(book).forEach(b -> table.add(b));
+			}
+		});
 
 		table = new BookTableView();
 

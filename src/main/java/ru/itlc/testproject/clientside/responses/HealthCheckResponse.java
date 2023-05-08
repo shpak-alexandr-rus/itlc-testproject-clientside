@@ -7,8 +7,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public
-class HealthCheckResponse {
+public class HealthCheckResponse {
     private final boolean dbStatus;
 
     @Override
