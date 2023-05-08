@@ -22,7 +22,8 @@ public class MainView {
 	}
 
 	private void buildUI() {
-		stage = new Stage(StageStyle.DECORATED);
+		stage = new Stage(StageStyle.UTILITY);
+		stage.setResizable(false);
 
 		AnchorPane root = new AnchorPane();
 		table = new BookTableView();
@@ -64,6 +65,10 @@ public class MainView {
 			}
 		});
 
+		Button closeBtn = new Button("Закрыть");
+		closeBtn.setPrefWidth(125.0);
+		closeBtn.setOnAction(event -> stage.close());
+
 		AnchorPane.setTopAnchor(table, 10.0);
 		AnchorPane.setLeftAnchor(table, 10.0);
 		AnchorPane.setRightAnchor(table, 145.0);
@@ -78,6 +83,9 @@ public class MainView {
 		AnchorPane.setTopAnchor(addBtn, 210.0);
 		AnchorPane.setRightAnchor(addBtn, 10.0);
 
+		AnchorPane.setTopAnchor(closeBtn, 310.0);
+		AnchorPane.setRightAnchor(closeBtn, 10.0);
+
 		Book[] book = HttpWorkUtils.getAllBooks();
 		if (book != null) {
 			Arrays.stream(book).forEach(b -> table.add(b));
@@ -87,6 +95,7 @@ public class MainView {
 		root.getChildren().add(deleteBtn);
 		root.getChildren().add(editBtn);
 		root.getChildren().add(addBtn);
+		root.getChildren().add(closeBtn);
 
 		Scene scene = new Scene(root, 1200, 400);
 		scene.getStylesheets().add("ru/itlc/testproject/clientside/stylesheet.css");
