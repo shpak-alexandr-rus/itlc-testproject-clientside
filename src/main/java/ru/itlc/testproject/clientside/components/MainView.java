@@ -55,7 +55,7 @@ public class MainView {
 		// Делается кнопка "Удалить" неактивной, если ни одна строка в таблице не выбрана
 		deleteBtn.disableProperty().bind(Bindings.isEmpty(table.getTableView().getSelectionModel().getSelectedItems()));
 
-		// Создание обработчик нажатия на кнопку "Удалить"
+		// Создание обработчика нажатия на кнопку "Удалить"
 		deleteBtn.setOnAction(e -> {
 			// Выполнение HTTP запроса для удаления записи из базу данных
 			BooleanResponse response = HttpWorkUtils.deleteBookById(table.getTableView().getSelectionModel().getSelectedItems().get(0).getBookId());
