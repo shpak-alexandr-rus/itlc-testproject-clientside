@@ -14,13 +14,25 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import ru.itlc.testproject.clientside.responses.Book;
+import ru.itlc.testproject.clientside.responses.BooleanResponse;
 import ru.itlc.testproject.clientside.utils.HttpWorkUtils;
+
+import java.time.LocalDate;
 
 import static ru.itlc.testproject.clientside.constants.Constants.LabelTextConstants.TEXT_ERROR_MESSAGE;
 
-
 public class BookFormView {
+    private final boolean isEditMode;
+    private Book book;
+
     public BookFormView() {
+        isEditMode = false;
+        buildUI();
+    }
+
+    public BookFormView(Book book) {
+        isEditMode = true;
+        this.book = book;
         buildUI();
     }
 
@@ -29,7 +41,11 @@ public class BookFormView {
         Stage stage = new Stage(StageStyle.UTILITY);
         stage.setResizable(false);
 
-        stage.setTitle("Создание новой записи");
+        if (isEditMode) {
+            stage.setTitle("Редактирование книги");
+        } else {
+            stage.setTitle("Создание новой записи");
+        }
 
         BorderPane root = new BorderPane();
         GridPane grid = new GridPane();
@@ -49,6 +65,19 @@ public class BookFormView {
         TextField txtBookPublisher = new TextField();
         TextField txtBookPublisherAddress = new TextField();
         DatePicker bookPublishingDate = new DatePicker();
+        if (isEditMode) {
+            txtBookAuthor.setText(book.getBookAuthor());
+            txtBookTitle.setText(book.getBookTitle());
+            txtBookPublisher.setText(book.getBookPublisher());
+            txtBookPublisherAddress.setText(book.getBookPublisherAddress());
+            bookPublishingDate.setValue(LocalDate.parse(book.getBookPublishingDate()));
+        } else {
+            txtBookAuthor.setPromptText("Введите имя автора");
+            txtBookTitle.setPromptText("Введите название книги");
+            txtBookPublisher.setPromptText("Введите название издательства");
+            txtBookPublisherAddress.setPromptText("Введите адрес издательства");
+            bookPublishingDate.setPromptText("Введите дату публикации");
+        }
 
         Label lblBookAuthorError = new Label("*");
         lblBookAuthorError.setVisible(false);
@@ -70,23 +99,30 @@ public class BookFormView {
         lblErrorMessage.setVisible(false);
         lblErrorMessage.getStyleClass().add("lbl-error");
 
-        txtBookAuthor.setPromptText("Введите имя автора");
-        txtBookTitle.setPromptText("Введите название книги");
-        txtBookPublisher.setPromptText("Введите название издательства");
-        txtBookPublisherAddress.setPromptText("Введите адрес издательства");
-        bookPublishingDate.setPromptText("Введите дату публикации");
-
         Button btnSave = new Button("Сохранить");
         btnSave.setOnAction((event -> {
-            Book bookForCreating = new Book(0,
-                    txtBookAuthor.getText(),
-                    txtBookTitle.getText(),
-                    txtBookPublisher.getText(),
-                    txtBookPublisherAddress.getText(),
-                    bookPublishingDate.getValue().toString());
-            Book createdBook = HttpWorkUtils.saveBook(bookForCreating);
-            if (createdBook != null) {
-                 stage.close();
+            if (!isEditMode) {
+                Book bookForCreating = new Book(0,
+                        txtBookAuthor.getText(),
+                        txtBookTitle.getText(),
+                        txtBookPublisher.getText(),
+                        txtBookPublisherAddress.getText(),
+                        bookPublishingDate.getValue().toString());
+                Book createdBook = HttpWorkUtils.saveBook(bookForCreating);
+                if (createdBook != null) {
+                    stage.close();
+                }
+            } else {
+                Book bookForUpdating = new Book(0,
+                        txtBookAuthor.getText(),
+                        txtBookTitle.getText(),
+                        txtBookPublisher.getText(),
+                        txtBookPublisherAddress.getText(),
+                        bookPublishingDate.getValue().toString());
+                BooleanResponse result = HttpWorkUtils.updateBookById(book.getBookId(), bookForUpdating);
+                if (result != null && result.isStatus()) {
+                    stage.close();
+                }
             }
         }));
 
@@ -96,11 +132,9 @@ public class BookFormView {
         ButtonBar btnBar = new ButtonBar();
         btnBar.getButtons().addAll(btnSave, btnCancel);
 
-
         grid.add(lblBookAuthor, 0, 0, 1, 1);
         grid.add(txtBookAuthor, 1, 0, 1, 1);
         grid.add(lblBookAuthorError, 2, 0, 1, 1);
-
 
         grid.add(lblBookTitle, 0, 1, 1, 1);
         grid.add(txtBookTitle, 1, 1, 1, 1);

@@ -7,6 +7,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
@@ -83,6 +84,32 @@ public class HttpWorkUtils {
             String responseBody = EntityUtils.toString(getHealthCheckResponse.getEntity());
             Gson gsonEntity = new Gson();
             return gsonEntity.fromJson(responseBody, Book[].class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static BooleanResponse updateBookById(long id, Book book) {
+        try {
+            URIBuilder uriBuilder = new URIBuilder(baseApiUrl);
+            uriBuilder.setPath(String.format(accessByIdFormat, id));
+
+            String healthCheckUri = uriBuilder.build().toString();
+            HttpPut updateBookMethod = new HttpPut(healthCheckUri);
+
+            Gson gsonEntity = new Gson();
+            String bodyValue = gsonEntity.toJson(book, Book.class);
+            final StringEntity entity = new StringEntity(bodyValue, StandardCharsets.UTF_8);
+            updateBookMethod.setEntity(entity);
+            updateBookMethod.setHeader("Accept", "application/json");
+            updateBookMethod.setHeader("Content-type", "application/json");
+
+            HttpResponse updateBookByIdResponse = client.execute(updateBookMethod);
+
+            String responseBody = EntityUtils.toString(updateBookByIdResponse.getEntity());
+
+            return gsonEntity.fromJson(responseBody, BooleanResponse.class);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
