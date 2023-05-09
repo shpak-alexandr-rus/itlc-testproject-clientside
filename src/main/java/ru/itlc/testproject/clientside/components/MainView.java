@@ -8,10 +8,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import ru.itlc.testproject.clientside.responses.Book;
+import ru.itlc.testproject.clientside.responses.BookPaginationResponse;
 import ru.itlc.testproject.clientside.responses.BooleanResponse;
 import ru.itlc.testproject.clientside.utils.HttpWorkUtils;
-
-import java.util.Arrays;
 
 public class MainView {
 	
@@ -161,12 +160,12 @@ public class MainView {
 		table.clear();
 
 		// Получение данных от сервера
-		Book[] book = HttpWorkUtils.getAllBooks(page, pageSize, sortingColumn, sortingDirection);
+		BookPaginationResponse booksResponse = HttpWorkUtils.getAllBooks(page, pageSize, sortingColumn, sortingDirection);
 
 		// Если данные получены
-		if (book != null) {
+		if (booksResponse != null) {
 			// Данные помещаются в таблицу
-			Arrays.stream(book).forEach(b -> table.add(b));
+			booksResponse.getBooks().forEach(b -> table.add(b));
 		}
 	}
 }

@@ -13,6 +13,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import ru.itlc.testproject.clientside.responses.Book;
+import ru.itlc.testproject.clientside.responses.BookPaginationResponse;
 import ru.itlc.testproject.clientside.responses.BooleanResponse;
 import ru.itlc.testproject.clientside.responses.HealthCheckResponse;
 
@@ -72,7 +73,7 @@ public class HttpWorkUtils {
         }
     }
 
-    public static Book[] getAllBooks(int page, int pageSize, String sortingColumn, String sortingDirection) {
+    public static BookPaginationResponse getAllBooks(int page, int pageSize, String sortingColumn, String sortingDirection) {
         try {
             URIBuilder uriBuilder = new URIBuilder(baseApiUrl);
             uriBuilder.setPath(processBooks);
@@ -89,7 +90,7 @@ public class HttpWorkUtils {
 
             String responseBody = EntityUtils.toString(getHealthCheckResponse.getEntity());
             Gson gsonEntity = new Gson();
-            return gsonEntity.fromJson(responseBody, Book[].class);
+            return gsonEntity.fromJson(responseBody, BookPaginationResponse.class);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
