@@ -159,7 +159,8 @@ public class BookFormView {
             }
 
             //  Проверка валидности данных введенных в поле дата публикации (дата не является больше текущей)
-            if (bookPublishingDate.getValue().compareTo(LocalDateTime.now().toLocalDate()) > 0) {
+            if (bookPublishingDate.getValue() == null
+                    || bookPublishingDate.getValue().compareTo(LocalDateTime.now().toLocalDate()) > 0) {
                 lblErrorMessage.setText(lblErrorMessage.getText() + DATE_ERROR_MESSAGE);
                 bookPublishingDateError.setVisible(true);
                 isProblemFound = true;

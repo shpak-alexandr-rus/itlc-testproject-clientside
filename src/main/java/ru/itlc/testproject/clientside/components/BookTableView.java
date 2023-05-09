@@ -1,9 +1,14 @@
 package ru.itlc.testproject.clientside.components;
 
+import javafx.geometry.Insets;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.LongStringConverter;
 import ru.itlc.testproject.clientside.responses.Book;
@@ -71,7 +76,32 @@ public class BookTableView extends VBox {
 		table.getColumns().add(bookPublishingDate);
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		table.getItems().clear();
+
+		// Создание панели для осуществления процесса пагинации
+		GridPane pane = new GridPane();
+		HBox paginationBar = new HBox();
+		Label paginationDescription = new Label("Вывести  ");
+		ComboBox<Integer> numberPrePage = new ComboBox<>();
+		numberPrePage.getItems().add(5);
+		numberPrePage.getItems().add(10);
+		numberPrePage.getItems().add(15);
+		numberPrePage.getItems().add(20);
+		numberPrePage.getSelectionModel().select(0);
+
+		Label pageNumberDescription = new Label("  элементов со страницы  ");
+		ComboBox<Integer> pageNumber = new ComboBox<>();
+		pageNumber.getItems().add(1);
+		pageNumber.getSelectionModel().select(0);
+		paginationBar.getChildren().add(paginationDescription);
+		paginationBar.getChildren().add(numberPrePage);
+		paginationBar.getChildren().add(pageNumberDescription);
+		paginationBar.getChildren().add(pageNumber);
+
+		pane.getChildren().add(paginationBar);
+		pane.setPadding(new Insets(10, 10, 10, 10));
+
 		getChildren().add(table);
+		getChildren().add(pane);
 	}
 
 	// Добавить книгу в таблицу
