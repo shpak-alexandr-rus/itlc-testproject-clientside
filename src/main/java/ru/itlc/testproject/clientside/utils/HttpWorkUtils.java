@@ -72,14 +72,20 @@ public class HttpWorkUtils {
         }
     }
 
-    public static Book[] getAllBooks() {
+    public static Book[] getAllBooks(int page, int pageSize, String sortingColumn, String sortingDirection) {
         try {
             URIBuilder uriBuilder = new URIBuilder(baseApiUrl);
             uriBuilder.setPath(processBooks);
 
-            String healthCheckUri = uriBuilder.build().toString();
-            HttpGet getHealthCheckMethod = new HttpGet(healthCheckUri);
-            HttpResponse getHealthCheckResponse = client.execute(getHealthCheckMethod);
+            String getAllBooksUri = uriBuilder
+                    .addParameter("page", String.valueOf(page))
+                    .addParameter("pageSize", String.valueOf(pageSize))
+                    .addParameter("sortingColumn", sortingColumn)
+                    .addParameter("sortingDirection", sortingDirection)
+                    .build().toString();
+            HttpGet getAllBooksMethod = new HttpGet(getAllBooksUri);
+
+            HttpResponse getHealthCheckResponse = client.execute(getAllBooksMethod);
 
             String responseBody = EntityUtils.toString(getHealthCheckResponse.getEntity());
             Gson gsonEntity = new Gson();

@@ -15,6 +15,7 @@ import ru.itlc.testproject.clientside.responses.Book;
 
 public class BookTableView extends VBox {
 
+	ComboBox<Integer> pageNumber;
 	private TableView<Book> table;
 	// Колонка таблицы для хранения ID
 	private TableColumn<Book, Long> bookId;
@@ -89,7 +90,7 @@ public class BookTableView extends VBox {
 		numberPrePage.getSelectionModel().select(0);
 
 		Label pageNumberDescription = new Label("  элементов со страницы  ");
-		ComboBox<Integer> pageNumber = new ComboBox<>();
+		pageNumber = new ComboBox<>();
 		pageNumber.getItems().add(1);
 		pageNumber.getSelectionModel().select(0);
 		paginationBar.getChildren().add(paginationDescription);
@@ -117,5 +118,12 @@ public class BookTableView extends VBox {
 	// Очистить содержимое таблицы
 	public void clear() {
 		table.getItems().clear();
+	}
+
+	public void setPageNumbers(int pageNumberValue) {
+		pageNumber.getItems().clear();
+		for (int i = 1; i < pageNumberValue + 1; pageNumberValue++) {
+			pageNumber.getItems().add(i);
+		}
 	}
 }

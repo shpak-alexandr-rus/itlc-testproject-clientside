@@ -40,7 +40,7 @@ public class MainView {
 				if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
 					Book book = row.getItem();
 					new BookFormView(book);
-					refreshBookTable(table);
+					refreshBookTable(table, 0, 0, "", "");
 				}
 			});
 			return row ;
@@ -62,7 +62,7 @@ public class MainView {
 
 			// Обновление содержимого таблицы
 			if (response != null && response.isStatus()) {
-				refreshBookTable(table);
+				refreshBookTable(table, 0, 0, "", "");
 			}
 		});
 
@@ -79,7 +79,7 @@ public class MainView {
 			new BookFormView(table.getTableView().getSelectionModel().getSelectedItems().get(0));
 
 			// Обновление содержимого таблицы
-			refreshBookTable(table);
+			refreshBookTable(table, 0, 0, "", "");
 		});
 
 		// Создание кнопки "Добавить"
@@ -91,7 +91,7 @@ public class MainView {
 			// Создание формы редактирования информации
 			new BookFormView();
 			// Обновление содержимого таблицы
-			refreshBookTable(table);
+			refreshBookTable(table, 0, 0, "", "");
 		});
 
 		// Создание кнопки "Закрыть"
@@ -128,7 +128,7 @@ public class MainView {
 		// !!! (КОНЕЦ) НАСТРОЙКА РАСПОЛЬЖЕНИЯ ЭЛЕМЕНТОВ НА ПАНЕЛЬ !!!
 
 		// Обновления содержимого таблицы
-		refreshBookTable(table);
+		refreshBookTable(table, 1, 5, "book_id", "ASC");
 
 		// !!! (НАЧАЛО) ДОБАВЛЕНИЕ ЭЛЕМЕНТОВ НА ПАНЕЛЬ !!!
 		// Добавление таблицу на панель
@@ -156,12 +156,12 @@ public class MainView {
 	}
 
 	// Метод для обновления содержимого таблицы
-	private void refreshBookTable(BookTableView table) {
+	private void refreshBookTable(BookTableView table, int page, int pageSize, String sortingColumn, String sortingDirection) {
 		// Очистка содержимого таблицы
 		table.clear();
 
 		// Получение данных от сервера
-		Book[] book = HttpWorkUtils.getAllBooks();
+		Book[] book = HttpWorkUtils.getAllBooks(page, pageSize, sortingColumn, sortingDirection);
 
 		// Если данные получены
 		if (book != null) {
