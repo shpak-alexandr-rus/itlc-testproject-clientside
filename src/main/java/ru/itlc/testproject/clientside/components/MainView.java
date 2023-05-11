@@ -31,14 +31,29 @@ public class MainView {
 		// Создание таблицы для отображения записей из базы данных
 		table = new BookTableView();
 
+		table.getTableView().setOnSort(e -> {
+			String sortColumn = null;
+			String sortDirection = null;
+			if (table.getTableView().getSortOrder() != null && !table.getTableView().getSortOrder().isEmpty()) {
+				sortColumn = HttpWorkUtils.mapTextToColumnName(table.getTableView().getSortOrder().get(0).getText());
+				sortDirection = HttpWorkUtils.mapSortTypeToDirection(table.getTableView().getSortOrder().get(0).getSortType().name());
+			}
+			HttpWorkUtils.refreshBookTable(table, table.getSelectedPageNumber(), table.getPageSize(), sortColumn, sortDirection);
+		});
 		// Создание обработчика двойного щелчка на элементе таблицы
 		table.getTableView().setRowFactory( tv -> {
 			TableRow<Book> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
 				if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+					String sortColumn = null;
+					String sortDirection = null;
+					if (table.getTableView().getSortOrder() != null && !table.getTableView().getSortOrder().isEmpty()) {
+						sortColumn = HttpWorkUtils.mapTextToColumnName(table.getTableView().getSortOrder().get(0).getText());
+						sortDirection = HttpWorkUtils.mapSortTypeToDirection(table.getTableView().getSortOrder().get(0).getSortType().name());
+					}
 					Book book = row.getItem();
 					new BookFormView(book);
-					HttpWorkUtils.refreshBookTable(table, table.getPageNumber(), table.getPageSize(), null, null);
+					HttpWorkUtils.refreshBookTable(table, table.getSelectedPageNumber(), table.getPageSize(), sortColumn, sortDirection);
 				}
 			});
 			return row ;
@@ -60,7 +75,13 @@ public class MainView {
 
 			// Обновление содержимого таблицы
 			if (response != null && response.isStatus()) {
-				HttpWorkUtils.refreshBookTable(table, table.getPageNumber(), table.getPageSize(), null, null);
+				String sortColumn = null;
+				String sortDirection = null;
+				if (table.getTableView().getSortOrder() != null && !table.getTableView().getSortOrder().isEmpty()) {
+					sortColumn = HttpWorkUtils.mapTextToColumnName(table.getTableView().getSortOrder().get(0).getText());
+					sortDirection = HttpWorkUtils.mapSortTypeToDirection(table.getTableView().getSortOrder().get(0).getSortType().name());
+				}
+				HttpWorkUtils.refreshBookTable(table, table.getSelectedPageNumber(), table.getPageSize(), sortColumn, sortDirection);
 			}
 		});
 
@@ -76,8 +97,14 @@ public class MainView {
 			// Создание формы редактирования информации
 			new BookFormView(table.getTableView().getSelectionModel().getSelectedItems().get(0));
 
+			String sortColumn = null;
+			String sortDirection = null;
+			if (table.getTableView().getSortOrder() != null && !table.getTableView().getSortOrder().isEmpty()) {
+				sortColumn = HttpWorkUtils.mapTextToColumnName(table.getTableView().getSortOrder().get(0).getText());
+				sortDirection = HttpWorkUtils.mapSortTypeToDirection(table.getTableView().getSortOrder().get(0).getSortType().name());
+			}
 			// Обновление содержимого таблицы
-			HttpWorkUtils.refreshBookTable(table, table.getPageNumber(), table.getPageSize(), null, null);
+			HttpWorkUtils.refreshBookTable(table, table.getSelectedPageNumber(), table.getPageSize(), sortColumn, sortDirection);
 		});
 
 		// Создание кнопки "Добавить"
@@ -88,8 +115,15 @@ public class MainView {
 		addBtn.setOnAction(e -> {
 			// Создание формы редактирования информации
 			new BookFormView();
+
+			String sortColumn = null;
+			String sortDirection = null;
+			if (table.getTableView().getSortOrder() != null && !table.getTableView().getSortOrder().isEmpty()) {
+				sortColumn = HttpWorkUtils.mapTextToColumnName(table.getTableView().getSortOrder().get(0).getText());
+				sortDirection = HttpWorkUtils.mapSortTypeToDirection(table.getTableView().getSortOrder().get(0).getSortType().name());
+			}
 			// Обновление содержимого таблицы
-			HttpWorkUtils.refreshBookTable(table, table.getPageNumber(), table.getPageSize(), null, null);
+			HttpWorkUtils.refreshBookTable(table, table.getSelectedPageNumber(), table.getPageSize(), sortColumn, sortDirection);
 		});
 
 		// Создание кнопки "Закрыть"
@@ -126,7 +160,7 @@ public class MainView {
 		// !!! (КОНЕЦ) НАСТРОЙКА РАСПОЛЬЖЕНИЯ ЭЛЕМЕНТОВ НА ПАНЕЛЬ !!!
 
 		// Обновления содержимого таблицы
-		HttpWorkUtils.refreshBookTable(table, table.getPageNumber(), table.getPageSize(), "book_id", "ASC");
+		HttpWorkUtils.refreshBookTable(table, table.getSelectedPageNumber(), table.getPageSize(), "book_id", "ASC");
 
 		// !!! (НАЧАЛО) ДОБАВЛЕНИЕ ЭЛЕМЕНТОВ НА ПАНЕЛЬ !!!
 		// Добавление таблицу на панель

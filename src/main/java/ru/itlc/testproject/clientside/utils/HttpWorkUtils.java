@@ -156,4 +156,42 @@ public class HttpWorkUtils {
             table.setPageNumbers(booksResponse.getTotalPagesCount());
         }
     }
+
+    public static String mapTextToColumnName(String text) {
+        String result = "";
+        switch (text) {
+            case "Номер в каталоге":
+                result = "book_id";
+                break;
+            case "Авторы":
+                result = "book_author";
+                break;
+            case "Название":
+                result = "book_title";
+                break;
+            case "Издательство":
+                result = "book_publisher";
+                break;
+            case "Адрес издательства":
+                result = "book_publisher_address";
+                break;
+            case "Дата публикации":
+                result = "book_publishing_date";
+                break;
+        }
+        return result;
+    }
+
+    public static String mapSortTypeToDirection(String sortType) {
+        String result = "";
+        switch (sortType) {
+            case "ASCENDING":
+                result = "ASC";
+                break;
+            case "DESCENDING":
+                result = "DESC";
+                break;
+        }
+        return result;
+    }
 }

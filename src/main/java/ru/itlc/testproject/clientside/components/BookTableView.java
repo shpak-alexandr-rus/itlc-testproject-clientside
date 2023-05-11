@@ -17,6 +17,7 @@ import ru.itlc.testproject.clientside.utils.HttpWorkUtils;
 public class BookTableView extends VBox {
 
 	private ComboBox<Integer> pageNumber;
+	private static boolean pageNumberUpdating = false;
 	private ComboBox<Integer> pageSize;
 	private TableView<Book> table;
 	// Колонка таблицы для хранения ID
@@ -92,8 +93,13 @@ public class BookTableView extends VBox {
 		pageSize.getSelectionModel().selectFirst();
 
 		pageSize.setOnAction(e -> {
-			System.out.println("Page size changed");
-			HttpWorkUtils.refreshBookTable(this, getPageNumber(), getPageSize(), null, null);
+			String sortColumn = null;
+			String sortDirection = null;
+			if (table.getSortOrder() != null && !table.getSortOrder().isEmpty()) {
+				sortColumn = HttpWorkUtils.mapTextToColumnName(table.getSortOrder().get(0).getText());
+				sortDirection = HttpWorkUtils.mapSortTypeToDirection(table.getSortOrder().get(0).getSortType().name());
+			}
+			HttpWorkUtils.refreshBookTable(this, getSelectedPageNumber(), getPageSize(), sortColumn, sortDirection);
 		});
 
 		Label pageNumberDescription = new Label("  элементов со страницы  ");
@@ -102,8 +108,15 @@ public class BookTableView extends VBox {
 		pageNumber.getSelectionModel().selectFirst();
 
 		pageNumber.setOnAction(e -> {
-			System.out.println("Page number changed");
-			HttpWorkUtils.refreshBookTable(this, getPageNumber(), getPageSize(), null, null);
+			if (!pageNumberUpdating) {
+				String sortColumn = null;
+				String sortDirection = null;
+				if (table.getSortOrder() != null && !table.getSortOrder().isEmpty()) {
+					sortColumn = HttpWorkUtils.mapTextToColumnName(table.getSortOrder().get(0).getText());
+					sortDirection = HttpWorkUtils.mapSortTypeToDirection(table.getSortOrder().get(0).getSortType().name());
+				}
+				HttpWorkUtils.refreshBookTable(this, getSelectedPageNumber(), getPageSize(), sortColumn, sortDirection);
+			}
 		});
 
 		paginationBar.getChildren().add(paginationDescription);
@@ -134,17 +147,26 @@ public class BookTableView extends VBox {
 	}
 
 	public void setPageNumbers(int pageNumberValue) {
-		if (pageNumber.getItems().size() != pageNumberValue) {
+		if (!pageNumberUpdating && pageNumber.getItems().size() != pageNumberValue) {
+			pageNumberUpdating = true;
 			int num = pageNumber.getSelectionModel().getSelectedIndex();
 			pageNumber.getItems().clear();
 			for (int i = 1; i <= pageNumberValue; i++) {
 				pageNumber.getItems().add(Integer.valueOf(i));
 			}
-			pageNumber.getSelectionModel().select(num);
+			pageNumber.getSelectionModel().select(num > pageNumber.getItems().size() - 1 ? 0 : num);
+			String sortColumn = null;
+			String sortDirection = null;
+			if (table.getSortOrder() != null && !table.getSortOrder().isEmpty()) {
+				sortColumn = HttpWorkUtils.mapTextToColumnName(table.getSortOrder().get(0).getText());
+				sortDirection = HttpWorkUtils.mapSortTypeToDirection(table.getSortOrder().get(0).getSortType().name());
+			}
+			HttpWorkUtils.refreshBookTable(this, getSelectedPageNumber(), getPageSize(), sortColumn, sortDirection);
+			pageNumberUpdating = false;
 		}
 	}
 
-	public int getPageNumber() {
+	public int getSelectedPageNumber() {
 		return pageNumber.getSelectionModel().getSelectedItem() == null ? 1 : pageNumber.getSelectionModel().getSelectedItem();
 	}
 
