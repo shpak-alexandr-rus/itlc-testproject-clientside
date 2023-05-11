@@ -8,7 +8,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import ru.itlc.testproject.clientside.responses.Book;
-import ru.itlc.testproject.clientside.responses.BookPaginationResponse;
 import ru.itlc.testproject.clientside.responses.BooleanResponse;
 import ru.itlc.testproject.clientside.utils.HttpWorkUtils;
 
@@ -39,7 +38,7 @@ public class MainView {
 				if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
 					Book book = row.getItem();
 					new BookFormView(book);
-					refreshBookTable(table, 0, 0, "", "");
+					HttpWorkUtils.refreshBookTable(table, table.getPageNumber(), table.getPageSize(), null, null);
 				}
 			});
 			return row ;
@@ -61,7 +60,7 @@ public class MainView {
 
 			// Обновление содержимого таблицы
 			if (response != null && response.isStatus()) {
-				refreshBookTable(table, 0, 0, "", "");
+				HttpWorkUtils.refreshBookTable(table, table.getPageNumber(), table.getPageSize(), null, null);
 			}
 		});
 
@@ -78,7 +77,7 @@ public class MainView {
 			new BookFormView(table.getTableView().getSelectionModel().getSelectedItems().get(0));
 
 			// Обновление содержимого таблицы
-			refreshBookTable(table, 0, 0, "", "");
+			HttpWorkUtils.refreshBookTable(table, table.getPageNumber(), table.getPageSize(), null, null);
 		});
 
 		// Создание кнопки "Добавить"
@@ -90,7 +89,7 @@ public class MainView {
 			// Создание формы редактирования информации
 			new BookFormView();
 			// Обновление содержимого таблицы
-			refreshBookTable(table, 0, 0, "", "");
+			HttpWorkUtils.refreshBookTable(table, table.getPageNumber(), table.getPageSize(), null, null);
 		});
 
 		// Создание кнопки "Закрыть"
@@ -127,7 +126,7 @@ public class MainView {
 		// !!! (КОНЕЦ) НАСТРОЙКА РАСПОЛЬЖЕНИЯ ЭЛЕМЕНТОВ НА ПАНЕЛЬ !!!
 
 		// Обновления содержимого таблицы
-		refreshBookTable(table, 1, 5, "book_id", "ASC");
+		HttpWorkUtils.refreshBookTable(table, table.getPageNumber(), table.getPageSize(), "book_id", "ASC");
 
 		// !!! (НАЧАЛО) ДОБАВЛЕНИЕ ЭЛЕМЕНТОВ НА ПАНЕЛЬ !!!
 		// Добавление таблицу на панель
@@ -152,20 +151,5 @@ public class MainView {
 		stage.setTitle("Картотека книг");
 		stage.setScene(scene);
 		stage.show();
-	}
-
-	// Метод для обновления содержимого таблицы
-	private void refreshBookTable(BookTableView table, int page, int pageSize, String sortingColumn, String sortingDirection) {
-		// Очистка содержимого таблицы
-		table.clear();
-
-		// Получение данных от сервера
-		BookPaginationResponse booksResponse = HttpWorkUtils.getAllBooks(page, pageSize, sortingColumn, sortingDirection);
-
-		// Если данные получены
-		if (booksResponse != null) {
-			// Данные помещаются в таблицу
-			booksResponse.getBooks().forEach(b -> table.add(b));
-		}
 	}
 }

@@ -12,6 +12,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import ru.itlc.testproject.clientside.components.BookTableView;
 import ru.itlc.testproject.clientside.responses.Book;
 import ru.itlc.testproject.clientside.responses.BookPaginationResponse;
 import ru.itlc.testproject.clientside.responses.BooleanResponse;
@@ -138,6 +139,21 @@ public class HttpWorkUtils {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static void refreshBookTable(BookTableView table, int page, int pageSize, String sortingColumn, String sortingDirection) {
+        // Очистка содержимого таблицы
+        table.clear();
+
+        // Получение данных от сервера
+        BookPaginationResponse booksResponse = HttpWorkUtils.getAllBooks(page, pageSize, sortingColumn, sortingDirection);
+
+        // Если данные получены
+        if (booksResponse != null) {
+            // Данные помещаются в таблицу
+            booksResponse.getBooks().forEach(b -> table.add(b));
+            table.setPageNumbers(booksResponse.getTotalPagesCount());
         }
     }
 }

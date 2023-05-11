@@ -12,10 +12,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.LongStringConverter;
 import ru.itlc.testproject.clientside.responses.Book;
+import ru.itlc.testproject.clientside.utils.HttpWorkUtils;
 
 public class BookTableView extends VBox {
 
-	ComboBox<Integer> pageNumber;
+	private ComboBox<Integer> pageNumber;
+	private ComboBox<Integer> pageSize;
 	private TableView<Book> table;
 	// Колонка таблицы для хранения ID
 	private TableColumn<Book, Long> bookId;
@@ -82,19 +84,30 @@ public class BookTableView extends VBox {
 		GridPane pane = new GridPane();
 		HBox paginationBar = new HBox();
 		Label paginationDescription = new Label("Вывести  ");
-		ComboBox<Integer> numberPrePage = new ComboBox<>();
-		numberPrePage.getItems().add(5);
-		numberPrePage.getItems().add(10);
-		numberPrePage.getItems().add(15);
-		numberPrePage.getItems().add(20);
-		numberPrePage.getSelectionModel().select(0);
+		pageSize = new ComboBox<>();
+		pageSize.getItems().add(5);
+		pageSize.getItems().add(10);
+		pageSize.getItems().add(15);
+		pageSize.getItems().add(20);
+		pageSize.getSelectionModel().selectFirst();
+
+		pageSize.setOnAction(e -> {
+			System.out.println("Page size changed");
+			HttpWorkUtils.refreshBookTable(this, getPageNumber(), getPageSize(), null, null);
+		});
 
 		Label pageNumberDescription = new Label("  элементов со страницы  ");
 		pageNumber = new ComboBox<>();
 		pageNumber.getItems().add(1);
-		pageNumber.getSelectionModel().select(0);
+		pageNumber.getSelectionModel().selectFirst();
+
+		pageNumber.setOnAction(e -> {
+			System.out.println("Page number changed");
+			HttpWorkUtils.refreshBookTable(this, getPageNumber(), getPageSize(), null, null);
+		});
+
 		paginationBar.getChildren().add(paginationDescription);
-		paginationBar.getChildren().add(numberPrePage);
+		paginationBar.getChildren().add(pageSize);
 		paginationBar.getChildren().add(pageNumberDescription);
 		paginationBar.getChildren().add(pageNumber);
 
@@ -121,9 +134,21 @@ public class BookTableView extends VBox {
 	}
 
 	public void setPageNumbers(int pageNumberValue) {
-		pageNumber.getItems().clear();
-		for (int i = 1; i < pageNumberValue + 1; pageNumberValue++) {
-			pageNumber.getItems().add(i);
+		if (pageNumber.getItems().size() != pageNumberValue) {
+			int num = pageNumber.getSelectionModel().getSelectedIndex();
+			pageNumber.getItems().clear();
+			for (int i = 1; i <= pageNumberValue; i++) {
+				pageNumber.getItems().add(Integer.valueOf(i));
+			}
+			pageNumber.getSelectionModel().select(num);
 		}
+	}
+
+	public int getPageNumber() {
+		return pageNumber.getSelectionModel().getSelectedItem() == null ? 1 : pageNumber.getSelectionModel().getSelectedItem();
+	}
+
+	public int getPageSize() {
+		return pageSize.getSelectionModel().getSelectedItem();
 	}
 }
